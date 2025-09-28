@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Post</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body class="grey lighten-4">
+
+  <nav>
+    <div class="nav-wrapper teal">
+      <a href="/posts" class="brand-logo center">Social Media</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h4 class="center-align">Crear Nuevo Post</h4>
+
+    <form action="/posts" method="POST" class="card-panel">
+      <div class="input-field">
+        <input type="text" name="title" id="title" required minlength="5" maxlength="30">
+        <label for="title">Título</label>
+      </div>
+
+      <div class="input-field">
+        <textarea name="content" id="content" class="materialize-textarea" required minlength="10"></textarea>
+        <label for="content">Contenido</label>
+      </div>
+
+      <div class="input-field">
+        <input type="text" name="hashtags" id="hashtags" placeholder="Separar con comas">
+        <label for="hashtags">Hashtags</label>
+      </div>
+
+      <div class="input-field">
+        <input type="text" name="imageUrl" id="imageUrl" placeholder="https://...imagen.jpg">
+        <label for="imageUrl">URL de la Imagen</label>
+      </div>
+
+      <button type="submit" class="btn waves-effect waves-light teal">
+        <i class="material-icons left">send</i> Crear Post
+      </button>
+    </form>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

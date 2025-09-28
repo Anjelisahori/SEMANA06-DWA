@@ -1,87 +1,70 @@
-import postService from "../services/postService.js";
-import postRepository from "../repositories/postRepository.js";
-import userRepository from "../repositories/userRepository.js"; // importamos el repositorio de usuarios
+import * as postService from "../services/postService.js";
 
-class PostController {
-    // Crear Post
-    async create(req, res) {
-        try {
-            const { title, content, hashtags, imageUrl, userId } = req.body;
+export const renderPosts = async (req, res) => {
+  try {
+    const posts = await postService.listPosts();
+    res.render("posts/index", { posts }); 
+  } catch (error) {
+    res.status(500).send("Error al listar posts: " + error.message);
+  }
+};
 
-            const postData = {
-                title,
-                content,
-                hashtags: hashtags ? hashtags.split(',').map(tag => tag.trim()) : [],
-                imageUrl,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            };
+export const renderNewForm = (req, res) => {
+  res.render("posts/new"); 
+};
 
-            await postService.createPost(userId, postData);
+export const createPost = async (req, res) => {
+  try {
+    const { title, content, hashtags, imageUrl } = req.body;
 
-            res.redirect("/posts");
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    }
+    await postService.addPost({
+      title,
+      content,
+      hashtags,
+      imageUrl: imageUrl && typeof imageUrl === "string" ? imageUrl.trim() : null, 
+      createdAt: new Date(),
+    });
 
-    // Obtener todos los posts
-    async getAll(req, res) {
-        try {
-            const posts = await postService.getPosts();
+    res.redirect("/posts");
+  } catch (error) {
+    res.status(400).send("Error al crear post: " + error.message);
+  }
+};
 
-            // Traemos un usuario para asociar posts (puede ser el primero o el usuario logueado)
-            const user = await userRepository.findById("ID_DEL_USUARIO_REAL"); // reemplaza con un _id válido
+export const renderEditForm = async (req, res) => {
+  try {
+    const post = await postService.getPost(req.params.id);
+    if (!post) return res.status(404).send("Post no encontrado");
 
-            res.render("posts", { posts, user });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
+    res.render("posts/edit", { post }); 
+  } catch (error) {
+    res.status(500).send("Error al obtener post: " + error.message);
+  }
+};
 
-    // Mostrar formulario de edición
-    async editForm(req, res) {
-        try {
-            const post = await postRepository.findById(req.params.id);
+export const updatePost = async (req, res) => {
+  try {
+    const { title, content, hashtags, imageUrl } = req.body;
 
-            // También necesitamos el usuario para el hidden input
-            const user = await userRepository.findById("ID_DEL_USUARIO_REAL"); // reemplaza con _id válido
+    await postService.editPost(req.params.id, {
+      title,
+      content,
+      hashtags,
+      imageUrl: imageUrl && typeof imageUrl === "string" ? imageUrl.trim() : null, 
+      updatedAt: new Date(),
+    });
 
-            res.render("editPost", { post, user });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
+    res.redirect("/posts");
+  } catch (error) {
+    res.status(400).send("Error al actualizar post: " + error.message);
+  }
+};
 
-    // Actualizar post
-    async update(req, res) {
-        try {
-            const { title, content, hashtags, imageUrl } = req.body;
-
-            const updateData = {
-                title,
-                content,
-                hashtags: hashtags ? hashtags.split(',').map(tag => tag.trim()) : [],
-                imageUrl,
-                updatedAt: new Date()
-            };
-
-            await postRepository.update(req.params.id, updateData);
-            res.redirect("/posts");
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    }
-
-    // Eliminar post
-    async delete(req, res) {
-        try {
-            await postRepository.delete(req.params.id);
-            res.redirect("/posts");
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
-}
-
-export default new PostController();
+export const deletePost = async (req, res) => {
+  try {
+    await postService.removePost(req.params.id);
+    res.redirect("/posts");
+  } catch (error) {
+    res.status(500).send("Error al eliminar post: " + error.message);
+  }
+};

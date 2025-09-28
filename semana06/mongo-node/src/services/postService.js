@@ -1,26 +1,11 @@
-import postRepository from "../repositories/postRepository.js";
-import userRepository from "../repositories/userRepository.js";
+import * as postRepository from "../repositories/postRepository.js";
 
-class PostService {
-    async createPost(userId, postData) {
-        const user = await userRepository.findById(userId);
-        if (!user) throw new Error("Usuario no encontrado");
+export const listPosts = async () => await postRepository.getAllPosts();
 
-        // Convertir hashtags separados por comas en array
-        if (postData.hashtags) {
-            postData.hashtags = postData.hashtags.split(",").map(tag => tag.trim());
-        }
+export const getPost = async (id) => await postRepository.getPostById(id);
 
-        return await postRepository.create({ ...postData, user: user._id });
-    }
+export const addPost = async (data) => await postRepository.createPost(data);
 
-    async getPosts() {
-        return await postRepository.findAll();
-    }
+export const editPost = async (id, data) => await postRepository.updatePost(id, data);
 
-    async getPostsByUser(userId) {
-        return await postRepository.findByUser(userId);
-    }
-}
-
-export default new PostService();
+export const removePost = async (id) => await postRepository.deletePost(id);

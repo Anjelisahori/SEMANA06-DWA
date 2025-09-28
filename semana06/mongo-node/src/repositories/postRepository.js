@@ -1,30 +1,31 @@
 import Post from "../models/Post.js";
 
-class PostRepository {
-    async create(post) {
-        return await Post.create(post);
-    }
+export const getAllPosts = async () => await Post.find();
 
-    async findAll() {
-        return await Post.find().populate("user");
-    }
+export const getPostById = async (id) => await Post.findById(id);
 
-    async findByUser(userId) {
-        return await Post.find({ user: userId }).populate("user");
-    }
+export const createPost = async (data) => {
+  const post = new Post({
+    title: data.title,
+    content: data.content,
+    hashtags: data.hashtags ? data.hashtags.split(",").map(tag => tag.trim()) : [],
+    imageUrl: data.imageUrl || "",
+  });
+  return await post.save();
+};
 
-    async findById(id) {
-        return await Post.findById(id).populate("user");
-    }
+export const updatePost = async (id, data) => {
+  return await Post.findByIdAndUpdate(
+    id,
+    {
+      title: data.title,
+      content: data.content,
+      hashtags: data.hashtags ? data.hashtags.split(",").map(tag => tag.trim()) : [],
+      imageUrl: data.imageUrl || "",
+      updatedAt: Date.now(),
+    },
+    { new: true }
+  );
+};
 
-    async update(postId, postData) {
-        postData.updatedAt = new Date();
-        return await Post.findByIdAndUpdate(postId, postData, { new: true });
-    }
-
-    async delete(postId) {
-        return await Post.findByIdAndDelete(postId);
-    }
-}
-
-export default new PostRepository();
+export const deletePost = async (id) => await Post.findByIdAndDelete(id);
