@@ -48,8 +48,8 @@ mongo-node/
 1. Clonar el repositorio:
 
    ```bash
-   git clone https://github.com/tu-usuario/tu-repo.git
-   cd tu-repo
+   git clone https://github.com/tu-usuario/tu-repo.git](https://github.com/Anjelisahori/SEMANA06-DWA.git
+   cd SEMANA06-DWA
    ```
 
 2. Instalar dependencias:
